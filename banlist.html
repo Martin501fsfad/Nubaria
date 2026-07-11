@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Banlist | Nubaria-Chilldark</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        * {
+            font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        body {
+            scroll-behavior: smooth;
+            background: #0a0a0b;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #a855f7 0%, #7c3aed 30%, #3b82f6 60%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .text-gradient-red {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 40%, #f87171 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-up {
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes scanline {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, rgba(168, 85, 247, 0.015), transparent);
+            pointer-events: none;
+            z-index: 100;
+            animation: scanline 8s linear infinite;
+        }
+
+        .card-glow {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card-glow:hover {
+            border-color: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 0 40px rgba(239, 68, 68, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-blur {
+            background: rgba(10, 10, 11, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        @keyframes pulse-red {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(239, 68, 68, 0.4);
+            }
+        }
+
+        .animate-pulse-red {
+            animation: pulse-red 3s ease-in-out infinite;
+        }
+
+        /* Vyhledávací input */
+        .search-input {
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: rgba(239, 68, 68, 0.5);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.1);
+        }
+
+        /* Prázdný stav */
+        .empty-state-icon {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+    </style>
+</head>
+
+<body class="text-zinc-100">
+
+    <div class="scanline"></div>
+
+    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div class="flex items-center gap-2">
+                    <div
+                        class="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-600/20 transition-all group-hover:bg-violet-600/30 group-hover:scale-110">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 text-violet-400 transition-all group-hover:rotate-12" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <span class="text-lg font-bold text-white">Nubaria<span
+                            class="text-violet-400">-Chilldark</span></span>
+                </div>
+            </a>
+
+            <div class="hidden items-center gap-8 md:flex">
+                <a href="#home" class="text-sm font-medium text-zinc-400 transition hover:text-white relative group">
+                    Domů
+                    <span
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-violet-500 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="tym.html" class="text-sm font-medium text-zinc-400 transition hover:text-white relative group">
+                    Tým
+                    <span
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-violet-500 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="pravidla.html" class="text-sm font-medium text-zinc-400 transition hover:text-white relative group">
+                    Pravidla
+                    <span
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-violet-500 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="banlist.html" class="text-sm font-medium text-zinc-400 transition hover:text-white relative group">
+                    BanList
+                    <span
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-violet-500 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="vote.html"
+                    class="rounded-full bg-violet-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-violet-500 hover:shadow-lg hover:shadow-violet-600/25">
+                    Hlasování
+                </a>
+            </div>
+
+            <button id="mobile-menu-button"
+                class="inline-flex items-center justify-center rounded-xl bg-zinc-800 p-2.5 text-zinc-400 transition hover:bg-zinc-700 md:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <div id="mobile-menu-overlay"
+        class="pointer-events-none fixed inset-0 z-40 bg-black/80 opacity-0 transition-opacity duration-300 md:hidden">
+    </div>
+
+    <aside id="mobile-menu"
+        class="fixed right-4 top-24 z-50 w-72 translate-x-full rounded-2xl border border-zinc-800 bg-zinc-950 shadow-2xl transition-all duration-400 ease-out md:hidden">
+        <div class="flex items-center justify-between border-b border-zinc-800 px-5 py-4">
+            <span class="text-sm font-bold text-white">Nubaria<span class="text-violet-400">-Chilldark</span></span>
+            <button id="mobile-menu-close"
+                class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-zinc-800 text-zinc-400 transition hover:bg-zinc-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <nav class="space-y-0.5 px-3 py-3">
+            <a href="index.html"
+                class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-zinc-300 transition hover:bg-zinc-900">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-zinc-500" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Domů
+            </a>
+            <a href="tym.html"
+                class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-zinc-300 transition hover:bg-zinc-900">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-zinc-500" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                Tým
+            </a>
+            <a href="index.html#minihry"
+                class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-zinc-300 transition hover:bg-zinc-900">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-zinc-500" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Minihry
+            </a>
+            <a href="pravidla.html"
+                class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-zinc-300 transition hover:bg-zinc-900">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-zinc-500" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                Pravidla
+            </a>
+            <a href="banlist.html"
+                class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-400 transition bg-red-600/10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+                Banlist
+            </a>
+        </nav>
+
+        <div class="border-t border-zinc-800 px-4 py-4">
+            <a href="index.html#pripojeni"
+                class="flex w-full items-center justify-center rounded-full bg-violet-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-violet-500">
+                Připojit se
+            </a>
+        </div>
+    </aside>
+
+    <main class="relative pt-20">
+        <section class="relative flex min-h-[50vh] items-center justify-center overflow-hidden">
+            <div class="pointer-events-none absolute inset-0"
+                style="background-image: linear-gradient(rgba(239, 68, 68, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(239, 68, 68, 0.03) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black, transparent);">
+            </div>
+
+            <div
+                class="pointer-events-none absolute top-0 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-red-600/8 blur-[120px] animate-pulse">
+            </div>
+            <div
+                class="pointer-events-none absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-red-700/5 blur-[100px]">
+            </div>
+
+            <div class="particle" style="top: 20%; left: 15%; animation-delay: 0s; position: absolute; width: 4px; height: 4px; background: #ef4444; border-radius: 50%; animation: twinkle 3s ease-in-out infinite;"></div>
+            <div class="particle" style="top: 30%; right: 20%; animation-delay: 0.5s; position: absolute; width: 4px; height: 4px; background: #f87171; border-radius: 50%; animation: twinkle 3s ease-in-out infinite;"></div>
+            <div class="particle" style="bottom: 25%; left: 25%; animation-delay: 1s; position: absolute; width: 4px; height: 4px; background: #ef4444; border-radius: 50%; animation: twinkle 3s ease-in-out infinite;"></div>
+
+            <div class="relative z-10 mx-auto max-w-7xl px-6 text-center">
+                <div
+                    class="mb-8 inline-flex items-center gap-2 rounded-full border border-red-700/30 bg-red-600/10 px-5 py-2.5 text-sm font-medium text-red-400 animate-fade-up backdrop-blur-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                    </svg>
+                    <span>Veřejný záznam</span>
+                </div>
+
+                <h1
+                    class="max-w-4xl mx-auto text-5xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl animate-fade-up">
+                    <span class="text-white block">Serverový</span>
+                    <span class="text-gradient-red block mt-2">Banlist</span>
+                </h1>
+
+                <div class="mt-6 animate-fade-up" style="animation-delay: 0.1s;">
+                    <p class="max-w-2xl mx-auto text-lg leading-relaxed text-zinc-400">
+                        Seznam všech potrestaných hráčů. Před podáním odvolání si prosím přečti
+                        <a href="pravidla.html" class="text-violet-400 hover:text-violet-300 underline decoration-violet-400/30 transition">pravidla serveru</a>.
+                    </p>
+                </div>
+
+                <div class="mt-10 grid grid-cols-3 gap-8 max-w-2xl mx-auto animate-fade-up"
+                    style="animation-delay: 0.2s;">
+                    <div class="text-center">
+                        <p class="text-3xl font-black text-white">0</p>
+                        <p class="text-sm text-zinc-500 mt-1">Aktivních banů</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-black text-white">0</p>
+                        <p class="text-sm text-zinc-500 mt-1">Celkem banů</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-black text-emerald-400">0%</p>
+                        <p class="text-sm text-zinc-500 mt-1">Zabanováno hráčů</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="relative border-t border-zinc-800 py-24 overflow-hidden">
+            <div
+                class="pointer-events-none absolute top-0 right-0 h-[500px] w-[500px] rounded-full bg-red-600/3 blur-[120px]">
+            </div>
+            <div
+                class="pointer-events-none absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full bg-red-700/3 blur-[100px]">
+            </div>
+
+            <div class="mx-auto max-w-5xl px-6 relative">
+                <div class="mb-10 flex flex-col sm:flex-row gap-4 animate-fade-up" style="animation-delay: 0.1s;">
+                    <div class="relative flex-1">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" placeholder="Vyhledat hráče podle jména..."
+                            class="search-input w-full rounded-2xl border border-zinc-800 bg-zinc-900/50 pl-12 pr-4 py-3.5 text-sm text-white placeholder-zinc-600 outline-none backdrop-blur-sm">
+                    </div>
+                    <select
+                        class="rounded-2xl border border-zinc-800 bg-zinc-900/50 px-5 py-3.5 text-sm text-zinc-400 outline-none cursor-pointer hover:border-zinc-700 transition-colors appearance-none bg-no-repeat bg-right"
+                        style="background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 fill=%22none%22 viewBox=%220 0 24 24%22 stroke=%22%2371717a%22 stroke-width=%222%22%3E%3Cpath stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M19 9l-7 7-7-7%22/%3E%3C/svg%3E'); background-position: right 1rem center; background-size: 1.2rem; padding-right: 2.5rem;">
+                        <option value="all">Všechny typy</option>
+                        <option value="ban">Ban</option>
+                        <option value="mute">Mute</option>
+                        <option value="warning">Varování</option>
+                    </select>
+                </div>
+
+                <div class="text-center py-20 animate-fade-up" style="animation-delay: 0.2s;">
+                    <div class="empty-state-icon flex justify-center mb-8">
+                        <div
+                            class="flex h-28 w-28 items-center justify-center rounded-full bg-emerald-600/10 ring-1 ring-emerald-600/20">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-emerald-400" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-3">Banlist je čistý! 🎉</h3>
+                    <p class="max-w-lg mx-auto text-base text-zinc-400 leading-relaxed">
+                        Momentálně nemáme žádné zabanované hráče. Všichni hrají podle pravidel
+                        a vytváříme společně skvělou komunitu. Jen tak dál!
+                    </p>
+                    <div class="mt-6 flex items-center justify-center gap-3 text-sm text-zinc-500">
+                        <span class="inline-flex items-center gap-1.5">
+                            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+                            Server je bezpečný
+                        </span>
+                        <span class="text-zinc-700">•</span>
+                        <span>Naposledy aktualizováno: dnes</span>
+                    </div>
+                </div>
+
+                <div
+                    class="mt-8 rounded-2xl border border-zinc-800 bg-zinc-900/30 p-6 animate-fade-up"
+                    style="animation-delay: 0.3s;">
+                    <div class="flex items-start gap-4">
+                        <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-600/10 text-xl">
+                            ℹ️
+                        </div>
+                        <div>
+                            <h4 class="text-base font-bold text-white">Informace o banlistu</h4>
+                            <p class="mt-1 text-sm text-zinc-400 leading-relaxed">
+                                Banlist je veřejný záznam všech hráčů, kteří byli potrestáni za porušení pravidel.
+                                Pokud jsi byl zabanován a chceš podat odvolání, kontaktuj nás přes Discord ticket.
+                                Každé odvolání je posuzováno individuálně.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="mt-10 rounded-2xl border border-violet-700/30 bg-gradient-to-r from-violet-600/10 to-blue-600/5 p-8 text-center animate-fade-up"
+                    style="animation-delay: 0.4s;">
+                    <div class="flex justify-center mb-4">
+                        <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-600/20 text-3xl">
+                            🛡️
+                        </div>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white">Pomoz nám udržet server čistý!</h3>
+                    <p class="mt-3 max-w-2xl mx-auto text-base text-zinc-400 leading-relaxed">
+                        Pokud narazíš na hráče porušujícího pravidla, nahlaš to pomocí report systému
+                        nebo přes Discord. Společně udržíme server bezpečný a férový pro všechny.
+                    </p>
+                    <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+                        <a href="pravidla.html"
+                            class="inline-flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-900/50 px-6 py-3 text-sm font-semibold text-zinc-300 transition hover:border-zinc-500 hover:bg-zinc-900">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            Pravidla serveru
+                        </a>
+                        <a href="https://discord.gg/k4vwk9V8HE"
+                            class="inline-flex items-center gap-2 rounded-full bg-violet-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-violet-500 hover:shadow-lg hover:shadow-violet-600/25">
+                            💬 Discord
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="border-t border-zinc-800 bg-zinc-950">
+            <div class="mx-auto max-w-7xl px-6 py-12">
+                <div class="flex flex-col items-center justify-between gap-6 md:flex-row">
+                    <div class="flex items-center gap-2 group">
+                        <div
+                            class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-600/20 transition-all group-hover:bg-violet-600/30 group-hover:scale-110">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-violet-400" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <span class="text-sm font-bold text-white">Nubaria<span
+                                class="text-violet-400">-Chilldark</span></span>
+                    </div>
+
+                    <p class="text-sm text-zinc-600">© 2025 Nubaria-Chilldark. Všechna práva vyhrazena.</p>
+
+                    <div
+                        class="flex items-center gap-2 rounded-full bg-zinc-900 px-4 py-2 text-xs font-medium text-zinc-500 border border-zinc-800">
+                        <span>Vytvořeno s ❤️ a ☕️ hrnky kávy</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const mobileMenuBtn = document.getElementById("mobile-menu-button");
+            const mobileMenu = document.getElementById("mobile-menu");
+            const mobileOverlay = document.getElementById("mobile-menu-overlay");
+            const mobileMenuClose = document.getElementById("mobile-menu-close");
+
+            const closeMobileMenu = () => {
+                mobileMenu.classList.add("translate-x-full");
+                mobileMenu.classList.remove("translate-x-0");
+                mobileOverlay.classList.add("opacity-0", "pointer-events-none");
+                mobileOverlay.classList.remove("opacity-100");
+            };
+
+            const openMobileMenu = () => {
+                mobileMenu.classList.remove("translate-x-full");
+                mobileMenu.classList.add("translate-x-0");
+                mobileOverlay.classList.remove("opacity-0", "pointer-events-none");
+                mobileOverlay.classList.add("opacity-100");
+            };
+
+            if (mobileMenuBtn && mobileMenu && mobileOverlay && mobileMenuClose) {
+                mobileMenuBtn.addEventListener("click", openMobileMenu);
+                mobileMenuClose.addEventListener("click", closeMobileMenu);
+                mobileOverlay.addEventListener("click", closeMobileMenu);
+                mobileMenu.querySelectorAll("a").forEach((link) => {
+                    link.addEventListener("click", closeMobileMenu);
+                });
+            }
+
+            document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+                anchor.addEventListener("click", function (e) {
+                    const id = this.getAttribute("href");
+                    if (!id || id === "#") return;
+                    const target = document.querySelector(id);
+                    if (!target) return;
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: "smooth", block: "start" });
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hlasování | Nubaria-Chilldark</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        * {
+            font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        body {
+            scroll-behavior: smooth;
+            background: #0a0a0b;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #a855f7 0%, #7c3aed 30%, #3b82f6 60%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .text-gradient-cyan {
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-up {
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, rgba(6, 182, 212, 0.015), transparent);
+            pointer-events: none;
+            z-index: 100;
+            animation: scanline 8s linear infinite;
+        }
+
+        .card-glow {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card-glow:hover {
+            border-color: rgba(6, 182, 212, 0.4);
+            box-shadow: 0 0 40px rgba(6, 182, 212, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .nav-blur {
+            background: rgba(10, 10, 11, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0b; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        @keyframes pulse-cyan {
+            0%, 100% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(6, 182, 212, 0.4); }
+        }
+
+        .animate-pulse-cyan {
+            animation: pulse-cyan 3s ease-in-out infinite;
+        }
+
+        .vote-card {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .vote-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(6, 182, 212, 0.5);
+            box-shadow: 0 20px 60px rgba(6, 182, 212, 0.1);
+        }
+
+        .vote-card:hover .vote-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .vote-icon {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+    </style>
+</head>
+
+<body class="text-zinc-100">
+
+    <div class="scanline"></div>
+
+    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div class="flex items-center gap-2">
+                    <div
+                        class="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-600/20 transition-all group-hover:bg-violet-600/30 group-hover:scale-110">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 text-violet-400 transition-all group-hover:rotate-12" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <span class="text-lg font-bold text-white">Nubaria<span
+                            class="text-violet-400">-Chilldark</span></span>
+                </div>
+            </a>
+
+            <div class="hidden items-center gap-8 md:flex">
+                <a href="#home" class="text-sm font-medium text-zinc-400 transition hover:text-white relative group">
+                    Domů
+                    <span
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-violet-500 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="tym.html" class="text-sm font-medium text-zinc-400 transition hover:text-white relative group">
+                    Tým
+                    <span
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-violet-500 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="pravidla.html" class="text-sm font-medium text-zinc-400 transition hover:text-white relative group">
+                    Pravidla
+                    <span
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-violet-500 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="banlist.html" class="text-sm font-medium text-zinc-400 transition hover:text-white relative group">
+                    BanList
+                    <span
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-violet-500 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="vote.html"
+                    class="rounded-full bg-violet-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-violet-500 hover:shadow-lg hover:shadow-violet-600/25">
+                    Hlasování
+                </a>
+            </div>
+
+            <button id="mobile-menu-button"
+                class="inline-flex items-center justify-center rounded-xl bg-zinc-800 p-2.5 text-zinc-400 transition hover:bg-zinc-700 md:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <div id="mobile-menu-overlay"
+        class="pointer-events-none fixed inset-0 z-40 bg-black/80 opacity-0 transition-opacity duration-300 md:hidden">
+    </div>
+
+    <aside id="mobile-menu"
+        class="fixed right-4 top-24 z-50 w-72 translate-x-full rounded-2xl border border-zinc-800 bg-zinc-950 shadow-2xl transition-all duration-400 ease-out md:hidden">
+        <div class="flex items-center justify-between border-b border-zinc-800 px-5 py-4">
+            <span class="text-sm font-bold text-white">Nubaria<span class="text-violet-400">-Chilldark</span></span>
+            <button id="mobile-menu-close"
+                class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-zinc-800 text-zinc-400 transition hover:bg-zinc-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <nav class="space-y-0.5 px-3 py-3">
+            <a href="index.html" class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-zinc-300 transition hover:bg-zinc-900">🏠 Domů</a>
+            <a href="tym.html" class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-zinc-300 transition hover:bg-zinc-900">👥 Tým</a>
+            <a href="index.html#minihry" class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-zinc-300 transition hover:bg-zinc-900">🎮 Minihry</a>
+            <a href="pravidla.html" class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-zinc-300 transition hover:bg-zinc-900">📜 Pravidla</a>
+            <a href="banlist.html" class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-zinc-300 transition hover:bg-zinc-900">🚫 Banlist</a>
+            <a href="vote.html" class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-cyan-400 transition bg-cyan-600/10">🗳️ Hlasování</a>
+        </nav>
+
+        <div class="border-t border-zinc-800 px-4 py-4">
+            <a href="index.html#pripojeni"
+                class="flex w-full items-center justify-center rounded-full bg-violet-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-violet-500">
+                Připojit se
+            </a>
+        </div>
+    </aside>
+
+    <main class="relative pt-20">
+        <section class="relative flex min-h-[50vh] items-center justify-center overflow-hidden">
+            <div class="pointer-events-none absolute inset-0"
+                style="background-image: linear-gradient(rgba(6, 182, 212, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.03) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black, transparent);">
+            </div>
+
+            <div class="pointer-events-none absolute top-0 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-cyan-600/8 blur-[120px] animate-pulse"></div>
+            <div class="pointer-events-none absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-blue-600/5 blur-[100px]"></div>
+
+            <div class="particle" style="top: 20%; left: 15%; animation-delay: 0s; position: absolute; width: 4px; height: 4px; background: #06b6d4; border-radius: 50%; animation: twinkle 3s ease-in-out infinite;"></div>
+            <div class="particle" style="top: 30%; right: 20%; animation-delay: 0.5s; position: absolute; width: 4px; height: 4px; background: #3b82f6; border-radius: 50%; animation: twinkle 3s ease-in-out infinite;"></div>
+            <div class="particle" style="bottom: 25%; left: 25%; animation-delay: 1s; position: absolute; width: 4px; height: 4px; background: #06b6d4; border-radius: 50%; animation: twinkle 3s ease-in-out infinite;"></div>
+
+            <div class="relative z-10 mx-auto max-w-7xl px-6 text-center">
+                <div class="mb-8 inline-flex items-center gap-2 rounded-full border border-cyan-700/30 bg-cyan-600/10 px-5 py-2.5 text-sm font-medium text-cyan-400 animate-fade-up backdrop-blur-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                    <span>Podpoř server</span>
+                </div>
+
+                <h1 class="max-w-4xl mx-auto text-5xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl animate-fade-up">
+                    <span class="text-white block">Hlasování pro</span>
+                    <span class="text-gradient-cyan block mt-2">Nubaria-Chilldark</span>
+                </h1>
+
+                <div class="mt-6 animate-fade-up" style="animation-delay: 0.1s;">
+                    <p class="max-w-2xl mx-auto text-lg leading-relaxed text-zinc-400">
+                        Pomoz našemu serveru růst! Každý tvůj hlas nám pomáhá přilákat nové hráče
+                        a získat lepší pozice na serverových listech. <span class="text-cyan-400 font-semibold">Odměníme tě!</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="relative border-t border-zinc-800 py-24 overflow-hidden">
+            <div class="pointer-events-none absolute top-0 right-0 h-[500px] w-[500px] rounded-full bg-cyan-600/3 blur-[120px]"></div>
+            <div class="pointer-events-none absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full bg-blue-600/3 blur-[100px]"></div>
+
+            <div class="mx-auto max-w-5xl px-6 relative">
+
+                <div class="mb-16 rounded-2xl border border-cyan-700/30 bg-gradient-to-r from-cyan-600/10 to-blue-600/5 p-8 backdrop-blur-sm animate-fade-up">
+                    <div class="flex items-start gap-5">
+                        <div class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-cyan-600/20 text-3xl">🗳️</div>
+                        <div>
+                            <h3 class="text-xl font-bold text-cyan-400">Jak hlasování funguje?</h3>
+                            <p class="mt-2 text-base text-zinc-400 leading-relaxed">
+                                Hlasováním na těchto stránkách podpoříš náš server. Čím více hlasů získáme,
+                                tím výše se server umístí v žebříčcích a více nových hráčů k nám zavítá.
+                                <strong class="text-white">Za každý hlas získáš odměnu přímo ve hře!</strong>
+                            </p>
+                            <div class="mt-4 flex flex-wrap gap-3">
+                                <div class="flex items-center gap-2 text-sm text-zinc-400">
+                                    <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+                                    Hlasuj každých 24 hodin
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-zinc-400">
+                                    <span class="inline-block w-2 h-2 rounded-full bg-cyan-500"></span>
+                                    Získej odměny ve hře
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-zinc-400">
+                                    <span class="inline-block w-2 h-2 rounded-full bg-violet-500"></span>
+                                    Podpoř komunitu
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+
+                    <div class="vote-card card-glow rounded-2xl border border-zinc-800 bg-zinc-900/30 p-8 text-center animate-fade-up" style="animation-delay: 0.1s;">
+                        <div class="vote-icon flex justify-center mb-6">
+                            <div class="flex h-20 w-20 items-center justify-center rounded-2xl bg-cyan-600/10 text-4xl">
+                                📊
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Server list 1</h3>
+                        <p class="text-sm text-zinc-400 mb-6 leading-relaxed">
+                            Hlasuj na prvním server listu a získej odměnu.
+                        </p>
+                        <div class="flex items-center justify-center gap-2 text-xs text-zinc-500 mb-6">
+                            <span class="inline-flex items-center gap-1">
+                                <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                Online hlasování
+                            </span>
+                        </div>
+                        <a href="#"
+                            class="inline-flex items-center gap-2 rounded-full bg-cyan-600 px-8 py-3.5 text-sm font-semibold text-white transition-all hover:bg-cyan-500 hover:shadow-lg hover:shadow-cyan-600/25 animate-pulse-cyan">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                            Hlasovat
+                        </a>
+                    </div>
+
+                    <div class="vote-card card-glow rounded-2xl border border-zinc-800 bg-zinc-900/30 p-8 text-center animate-fade-up" style="animation-delay: 0.2s;">
+                        <div class="vote-icon flex justify-center mb-6">
+                            <div class="flex h-20 w-20 items-center justify-center rounded-2xl bg-blue-600/10 text-4xl">
+                                🏆
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Server list 2</h3>
+                        <p class="text-sm text-zinc-400 mb-6 leading-relaxed">
+                            Hlasuj na druhém server listu a získej odměnu.
+                        </p>
+                        <div class="flex items-center justify-center gap-2 text-xs text-zinc-500 mb-6">
+                            <span class="inline-flex items-center gap-1">
+                                <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                Online hlasování
+                            </span>
+                        </div>
+                        <a href="#"
+                            class="inline-flex items-center gap-2 rounded-full bg-blue-600 px-8 py-3.5 text-sm font-semibold text-white transition-all hover:bg-blue-500 hover:shadow-lg hover:shadow-blue-600/25">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                            Hlasovat
+                        </a>
+                    </div>
+
+                    <div class="vote-card card-glow rounded-2xl border border-zinc-800 bg-zinc-900/30 p-8 text-center animate-fade-up md:col-span-2 lg:col-span-1" style="animation-delay: 0.3s;">
+                        <div class="vote-icon flex justify-center mb-6">
+                            <div class="flex h-20 w-20 items-center justify-center rounded-2xl bg-violet-600/10 text-4xl">
+                                ⭐
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Server list 3</h3>
+                        <p class="text-sm text-zinc-400 mb-6 leading-relaxed">
+                            Hlasuj na třetím server listu a získej odměnu.
+                        </p>
+                        <div class="flex items-center justify-center gap-2 text-xs text-zinc-500 mb-6">
+                            <span class="inline-flex items-center gap-1">
+                                <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                Online hlasování
+                            </span>
+                        </div>
+                        <a href="#"
+                            class="inline-flex items-center gap-2 rounded-full bg-violet-600 px-8 py-3.5 text-sm font-semibold text-white transition-all hover:bg-violet-500 hover:shadow-lg hover:shadow-violet-600/25">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                            Hlasovat
+                        </a>
+                    </div>
+                </div>
+
+                <div class="mt-16 rounded-2xl border border-cyan-700/30 bg-gradient-to-r from-cyan-600/10 to-blue-600/5 p-8 animate-fade-up" style="animation-delay: 0.4s;">
+                    <h3 class="text-2xl font-bold text-white text-center mb-8">🎁 Odměny za hlasování</h3>
+                    <div class="grid gap-6 md:grid-cols-3">
+                        <div class="rounded-xl bg-zinc-900/50 border border-zinc-800 p-6 text-center">
+                            <div class="flex justify-center mb-3 text-3xl">💎</div>
+                            <h4 class="text-lg font-bold text-white mb-2">1 hlas</h4>
+                            <p class="text-sm text-zinc-400">1 diamant + 100$ herní měny</p>
+                        </div>
+                        <div class="rounded-xl bg-zinc-900/50 border border-zinc-800 p-6 text-center">
+                            <div class="flex justify-center mb-3 text-3xl">🌟</div>
+                            <h4 class="text-lg font-bold text-white mb-2">5 hlasů</h4>
+                            <p class="text-sm text-zinc-400">5 diamantů + 500$ herní měny + speciální item</p>
+                        </div>
+                        <div class="rounded-xl bg-zinc-900/50 border border-zinc-800 p-6 text-center">
+                            <div class="flex justify-center mb-3 text-3xl">👑</div>
+                            <h4 class="text-lg font-bold text-white mb-2">10 hlasů</h4>
+                            <p class="text-sm text-zinc-400">10 diamantů + Vote klíč + Vote prefix</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 rounded-2xl border border-violet-700/30 bg-gradient-to-r from-violet-600/10 to-blue-600/5 p-8 text-center animate-fade-up" style="animation-delay: 0.5s;">
+                    <div class="flex justify-center mb-4">
+                        <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-600/20 text-3xl">💜</div>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white">Každý hlas se počítá!</h3>
+                    <p class="mt-3 max-w-2xl mx-auto text-base text-zinc-400 leading-relaxed">
+                        Děkujeme za tvou podporu! Společně uděláme Nubaria-Chilldark jedním z nejlepších serverů.
+                        Nezapomeň hlasovat každý den pro maximální odměny.
+                    </p>
+                    <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+                        <a href="index.html#pripojeni"
+                            class="inline-flex items-center gap-2 rounded-full bg-violet-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-violet-500 hover:shadow-lg hover:shadow-violet-600/25">
+                            ⚡ Připojit se na server
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="border-t border-zinc-800 bg-zinc-950">
+            <div class="mx-auto max-w-7xl px-6 py-12">
+                <div class="flex flex-col items-center justify-between gap-6 md:flex-row">
+                    <div class="flex items-center gap-2 group">
+                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-600/20 transition-all group-hover:bg-violet-600/30 group-hover:scale-110">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <span class="text-sm font-bold text-white">Nubaria<span class="text-violet-400">-Chilldark</span></span>
+                    </div>
+                    <p class="text-sm text-zinc-600">© 2025 Nubaria-Chilldark. Všechna práva vyhrazena.</p>
+                    <div class="flex items-center gap-2 rounded-full bg-zinc-900 px-4 py-2 text-xs font-medium text-zinc-500 border border-zinc-800">
+                        <span>Vytvořeno s ❤️ a ☕️ hrnky kávy</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const mobileMenuBtn = document.getElementById("mobile-menu-button");
+            const mobileMenu = document.getElementById("mobile-menu");
+            const mobileOverlay = document.getElementById("mobile-menu-overlay");
+            const mobileMenuClose = document.getElementById("mobile-menu-close");
+
+            const closeMobileMenu = () => {
+                mobileMenu.classList.add("translate-x-full");
+                mobileMenu.classList.remove("translate-x-0");
+                mobileOverlay.classList.add("opacity-0", "pointer-events-none");
+                mobileOverlay.classList.remove("opacity-100");
+            };
+
+            const openMobileMenu = () => {
+                mobileMenu.classList.remove("translate-x-full");
+                mobileMenu.classList.add("translate-x-0");
+                mobileOverlay.classList.remove("opacity-0", "pointer-events-none");
+                mobileOverlay.classList.add("opacity-100");
+            };
+
+            if (mobileMenuBtn && mobileMenu && mobileOverlay && mobileMenuClose) {
+                mobileMenuBtn.addEventListener("click", openMobileMenu);
+                mobileMenuClose.addEventListener("click", closeMobileMenu);
+                mobileOverlay.addEventListener("click", closeMobileMenu);
+                mobileMenu.querySelectorAll("a").forEach((link) => {
+                    link.addEventListener("click", closeMobileMenu);
+                });
+            }
+
+            document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+                anchor.addEventListener("click", function (e) {
+                    const id = this.getAttribute("href");
+                    if (!id || id === "#") return;
+                    const target = document.querySelector(id);
+                    if (!target) return;
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: "smooth", block: "start" });
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

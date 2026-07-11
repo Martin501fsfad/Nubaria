@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nubaria-Chilldark | Náš Tým</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        * {
+            font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        body {
+            scroll-behavior: smooth;
+            background: #0a0a0b;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #a855f7 0%, #7c3aed 30%, #3b82f6 60%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-blur {
+            background: rgba(10, 10, 11, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-up {
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes scanline {
+            0% {
+                transform: translateY(-100%);
+            }
+
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, rgba(168, 85, 247, 0.015), transparent);
+            pointer-events: none;
+            z-index: 100;
+            animation: scanline 8s linear infinite;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+
+        .team-card {
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: linear-gradient(145deg, rgba(20, 20, 25, 0.5), rgba(15, 15, 20, 0.5));
+            backdrop-filter: blur(20px);
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(168, 85, 247, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .team-card:hover .avatar-container {
+            animation: avatarGlow 2s ease-in-out infinite;
+        }
+
+        .team-card:hover .avatar-container img {
+            transform: scale(1.05);
+        }
+
+        .avatar-container {
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.1);
+        }
+
+        .avatar-container img {
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            image-rendering: pixelated; /* Zachová pixely skinu */
+        }
+
+        .rank-badge {
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover .rank-badge {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .section-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.3), transparent);
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .section-badge {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .section-badge::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+
+<body class="text-zinc-100">
+
+    <div class="scanline"></div>
+
+    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div
+                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-600/20 transition-all group-hover:bg-violet-600/30 group-hover:scale-110">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 text-violet-400 transition-all group-hover:rotate-12" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <span class="text-lg font-bold text-white">Nubaria<span class="text-violet-400">-Chilldark</span></span>
+            </a>
+
+            <div class="hidden items-center gap-8 md:flex">
+                <a href="#home" class="text-sm font-medium text-zinc-400 transition hover:text-white relative group">
+                    Domů
+                    <span
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-violet-500 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="tym.html" class="text-sm font-medium text-zinc-400 transition hover:text-white relative group">
+                    Tým
+                    <span
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-violet-500 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="pravidla.html" class="text-sm font-medium text-zinc-400 transition hover:text-white relative group">
+                    Pravidla
+                    <span
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-violet-500 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="banlist.html" class="text-sm font-medium text-zinc-400 transition hover:text-white relative group">
+                    BanList
+                    <span
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-violet-500 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="vote.html"
+                    class="rounded-full bg-violet-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-violet-500 hover:shadow-lg hover:shadow-violet-600/25">
+                    Hlasování
+                </a>
+            </div>
+
+            <a href="index.html"
+                class="md:hidden inline-flex items-center justify-center rounded-xl bg-zinc-800 p-2.5 text-zinc-400 transition hover:bg-zinc-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+            </a>
+        </div>
+    </nav>
+
+    <main class="relative pt-20">
+        <section class="relative py-24 overflow-hidden">
+            <div
+                class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-[600px] w-[600px] rounded-full bg-violet-600/10 blur-[150px]">
+            </div>
+            <div
+                class="pointer-events-none absolute top-20 right-0 h-[300px] w-[300px] rounded-full bg-blue-600/8 blur-[100px]">
+            </div>
+
+            <div class="mx-auto max-w-4xl px-6 relative text-center">
+                <span
+                    class="inline-flex items-center gap-2 rounded-full border border-violet-700/30 bg-violet-600/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-violet-400 animate-fade-up">
+                    <span class="h-2 w-2 rounded-full bg-violet-500 animate-pulse"></span>
+                    Náš tým
+                </span>
+                <h1 class="mt-6 text-5xl font-black tracking-tight text-white sm:text-6xl lg:text-7xl animate-fade-up"
+                    style="animation-delay: 0.1s;">
+                    Lidé za <span class="text-gradient">serverem</span>
+                </h1>
+                <p class="mt-4 text-lg text-zinc-400 animate-fade-up max-w-xl mx-auto" style="animation-delay: 0.2s;">
+                    Poznej tým, který se stará o chod serveru, staví úžasné mapy a pomáhá hráčům.
+                </p>
+            </div>
+        </section>
+
+        <section class="relative border-t border-zinc-800/50 py-20">
+            <div class="mx-auto max-w-5xl px-6">
+                <div class="text-center mb-12">
+                    <div class="section-badge inline-flex items-center gap-3 rounded-full bg-amber-600/10 px-5 py-2.5 mb-5">
+                        <span class="text-xl">👑</span>
+                        <h2 class="text-lg font-bold text-white">Vedení & Admin</h2>
+                    </div>
+                    <div class="section-line w-32 mx-auto"></div>
+                </div>
+
+                <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-center">
+                    <div class="team-card rounded-2xl p-6 text-center">
+                        <div class="avatar-container mx-auto w-28 h-28 rounded-2xl overflow-hidden bg-zinc-800/50 mb-4">
+                            <img src="https://visage.surgeplay.com/bust/500/Johnycekk" alt="Johnycekk"
+                                class="w-full h-full object-cover scale-110"
+                                onerror="this.src='images/johnycekk.png'">
+                        </div>
+                        <span class="rank-badge inline-flex items-center gap-1.5 rounded-full bg-amber-600/15 px-4 py-1.5 text-xs font-semibold text-amber-400 mb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                            Majitel
+                        </span>
+                        <h3 class="text-lg font-bold text-white mb-1">Johnycekk</h3>
+                        <p class="text-xs text-zinc-500">Zakladatel a hlavní vývojář</p>
+                    </div>
+
+                    <div class="team-card rounded-2xl p-6 text-center">
+                        <div class="avatar-container mx-auto w-28 h-28 rounded-2xl overflow-hidden bg-zinc-800/50 mb-4">
+                            <img src="https://visage.surgeplay.com/bust/500/LunaxSK" alt="LunaxSK"
+                                class="w-full h-full object-cover scale-110"
+                                onerror="this.src='images/lunaxsk.png'">
+                        </div>
+                        <span class="rank-badge inline-flex items-center gap-1.5 rounded-full bg-amber-600/15 px-4 py-1.5 text-xs font-semibold text-amber-400 mb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                            Spolumajitel
+                        </span>
+                        <h3 class="text-lg font-bold text-white mb-1">LunaxSK</h3>
+                        <p class="text-xs text-zinc-500">Spoluzakladatel a správce komunity</p>
+                    </div>
+
+                    <div class="team-card rounded-2xl p-6 text-center">
+                        <div class="avatar-container mx-auto w-28 h-28 rounded-2xl overflow-hidden bg-zinc-800/50 mb-4">
+                            <img src="https://visage.surgeplay.com/bust/500/sim0nekk" alt="Botickaaa"
+                                class="w-full h-full object-cover scale-110"
+                                onerror="this.src='images/botickaaa.png'">
+                        </div>
+                        <span class="rank-badge inline-flex items-center gap-1.5 rounded-full bg-amber-600/15 px-4 py-1.5 text-xs font-semibold text-amber-400 mb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                            Vedení
+                        </span>
+                        <h3 class="text-lg font-bold text-white mb-1">Botickaaa</h3>
+                        <p class="text-xs text-zinc-500">Správce serveru a bezpečnosti</p>
+                    </div>
+
+                    <div class="team-card rounded-2xl p-6 text-center">
+                        <div class="avatar-container mx-auto w-28 h-28 rounded-2xl overflow-hidden bg-zinc-800/50 mb-4">
+                            <img src="https://visage.surgeplay.com/bust/500/BarberSet" alt="Pepik128new"
+                                class="w-full h-full object-cover scale-110"
+                                onerror="this.src='images/pepik128new.png'">
+                        </div>
+                        <span class="rank-badge inline-flex items-center gap-1.5 rounded-full bg-red-600/15 px-4 py-1.5 text-xs font-semibold text-red-400 mb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                            Admin
+                        </span>
+                        <h3 class="text-lg font-bold text-white mb-1">Pepik128new</h3>
+                        <p class="text-xs text-zinc-500">Správce hráčů a pořádek</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="relative border-t border-zinc-800/50 py-20">
+            <div class="mx-auto max-w-5xl px-6">
+                <div class="text-center mb-12">
+                    <div class="section-badge inline-flex items-center gap-3 rounded-full bg-cyan-600/10 px-5 py-2.5 mb-5">
+                        <span class="text-xl">🔧</span>
+                        <h2 class="text-lg font-bold text-white">Technici, Event & Build</h2>
+                    </div>
+                    <div class="section-line w-32 mx-auto"></div>
+                </div>
+
+                <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-center">
+                    
+                    <div class="team-card rounded-2xl p-6 text-center">
+                        <div class="avatar-container mx-auto w-28 h-28 rounded-2xl overflow-hidden bg-zinc-800/50 mb-4">
+                            <img src="https://visage.surgeplay.com/bust/500/donik29111" alt="donik29111"
+                                class="w-full h-full object-cover scale-110"
+                                onerror="this.src='images/donik29111.png'">
+                        </div>
+                        <span class="rank-badge inline-flex items-center gap-1.5 rounded-full bg-cyan-600/15 px-4 py-1.5 text-xs font-semibold text-cyan-400 mb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                            Technik
+                        </span>
+                        <h3 class="text-lg font-bold text-white mb-1">donik29111</h3>
+                        <p class="text-xs text-zinc-500">Technická podpora a pluginy</p>
+                    </div>
+
+                    <div class="team-card rounded-2xl p-6 text-center">
+                        <div class="avatar-container mx-auto w-28 h-28 rounded-2xl overflow-hidden bg-zinc-800/50 mb-4">
+                            <img src="https://visage.surgeplay.com/bust/500/Pedu" alt="Pedu"
+                                class="w-full h-full object-cover scale-110"
+                                onerror="this.src='images/pedu.png'">
+                        </div>
+                        <span class="rank-badge inline-flex items-center gap-1.5 rounded-full bg-cyan-600/15 px-4 py-1.5 text-xs font-semibold text-cyan-400 mb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                            Technik
+                        </span>
+                        <h3 class="text-lg font-bold text-white mb-1">Pedu</h3>
+                        <p class="text-xs text-zinc-500">Správa backendu a hostingu</p>
+                    </div>
+
+                    <div class="team-card rounded-2xl p-6 text-center">
+                        <div class="avatar-container mx-auto w-28 h-28 rounded-2xl overflow-hidden bg-zinc-800/50 mb-4">
+                            <img src="https://visage.surgeplay.com/bust/500/HA_RU_XD" alt="Borek0609"
+                                class="w-full h-full object-cover scale-110"
+                                onerror="this.src='images/borek0609.png'">
+                        </div>
+                        <span class="rank-badge inline-flex items-center gap-1.5 rounded-full bg-green-600/15 px-4 py-1.5 text-xs font-semibold text-green-400 mb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                            Eventer
+                        </span>
+                        <h3 class="text-lg font-bold text-white mb-1">Borek0609</h3>
+                        <p class="text-xs text-zinc-500">Pořadatel akcí a minihier</p>
+                    </div>
+
+                    <div class="team-card rounded-2xl p-6 text-center">
+                        <div class="avatar-container mx-auto w-28 h-28 rounded-2xl overflow-hidden bg-zinc-800/50 mb-4">
+                            <img src="https://visage.surgeplay.com/bust/500/vampboyja" alt="nari108"
+                                class="w-full h-full object-cover scale-110"
+                                onerror="this.src='images/nari108.png'">
+                        </div>
+                        <span class="rank-badge inline-flex items-center gap-1.5 rounded-full bg-blue-600/15 px-4 py-1.5 text-xs font-semibold text-blue-400 mb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                            Builder
+                        </span>
+                        <h3 class="text-lg font-bold text-white mb-1">nari108</h3>
+                        <p class="text-xs text-zinc-500">Stavitel map a světů</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="relative border-t border-zinc-800/50 py-20">
+            <div class="mx-auto max-w-5xl px-6">
+                <div class="text-center mb-12">
+                    <div class="section-badge inline-flex items-center gap-3 rounded-full bg-pink-600/10 px-5 py-2.5 mb-5">
+                        <span class="text-xl">🎥</span>
+                        <h2 class="text-lg font-bold text-white">Obsah, Podpora & Web</h2>
+                    </div>
+                    <div class="section-line w-32 mx-auto"></div>
+                </div>
+
+                <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-center">
+                    
+                    <div class="team-card rounded-2xl p-6 text-center">
+                        <div class="avatar-container mx-auto w-28 h-28 rounded-2xl overflow-hidden bg-zinc-800/50 mb-4">
+                            <img src="https://visage.surgeplay.com/bust/500/BreadswordHD" alt="Bread85"
+                                class="w-full h-full object-cover scale-110"
+                                onerror="this.src='images/bread85.png'">
+                        </div>
+                        <span class="rank-badge inline-flex items-center gap-1.5 rounded-full bg-pink-600/15 px-4 py-1.5 text-xs font-semibold text-pink-400 mb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-pink-400"></span>
+                            Content Creator
+                        </span>
+                        <h3 class="text-lg font-bold text-white mb-1">Bread85</h3>
+                        <p class="text-xs text-zinc-500">Tvorba videí a propagace</p>
+                    </div>
+
+                    <div class="team-card rounded-2xl p-6 text-center">
+                        <div class="avatar-container mx-auto w-28 h-28 rounded-2xl overflow-hidden bg-zinc-800/50 mb-4">
+                            <img src="https://visage.surgeplay.com/bust/500/Monkey_Man2141" alt="Tad1s54"
+                                class="w-full h-full object-cover scale-110"
+                                onerror="this.src='images/tad1s54.png'">
+                        </div>
+                        <span class="rank-badge inline-flex items-center gap-1.5 rounded-full bg-violet-600/15 px-4 py-1.5 text-xs font-semibold text-violet-400 mb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-violet-400"></span>
+                            Hlavní Helper
+                        </span>
+                        <h3 class="text-lg font-bold text-white mb-1">Tad1s54</h3>
+                        <p class="text-xs text-zinc-500">Pomoc hráčům a podpora</p>
+                    </div>
+
+                    <div class="team-card rounded-2xl p-6 text-center">
+                        <div class="avatar-container mx-auto w-28 h-28 rounded-2xl overflow-hidden bg-zinc-800/50 mb-4">
+                            <img src="https://visage.surgeplay.com/bust/500/SketchyFN" alt="neznamejj_dev"
+                                class="w-full h-full object-cover scale-110"
+                                onerror="this.src='images/neznamejj_dev.png'">
+                        </div>
+                        <span class="rank-badge inline-flex items-center gap-1.5 rounded-full bg-yellow-600/15 px-4 py-1.5 text-xs font-semibold text-yellow-400 mb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+                            Správce Webu
+                        </span>
+                        <h3 class="text-lg font-bold text-white mb-1">neznamejj_dev</h3>
+                        <p class="text-xs text-zinc-500">Správce webu</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="relative border-t border-zinc-800/50 py-20">
+            <div class="mx-auto max-w-2xl px-6 text-center">
+                <div
+                    class="rounded-3xl border border-violet-700/30 bg-gradient-to-br from-violet-600/5 to-blue-600/5 p-12 backdrop-blur-sm">
+                    <div class="text-4xl mb-4">🚀</div>
+                    <h2 class="text-3xl font-black text-white mb-4">Chceš se přidat k týmu?</h2>
+                    <p class="text-zinc-400 mb-8">
+                        Hledáme aktivní a talentované hráče! Připoj se na Discord a staň se součástí
+                        našeho týmu.
+                    </p>
+                    <div class="flex flex-wrap items-center justify-center gap-4">
+                        <a href="#"
+                            class="inline-flex items-center gap-2 rounded-full bg-violet-600 px-8 py-3.5 text-base font-semibold text-white transition-all hover:bg-violet-500 hover:shadow-xl hover:shadow-violet-600/30">
+                            <span>💜</span>
+                            Discord
+                        </a>
+                        <a href="https://discord.gg/k4vwk9V8HE"
+                            class="inline-flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-900/50 px-8 py-3.5 text-base font-semibold text-zinc-300 transition hover:border-zinc-500 hover:bg-zinc-900">
+                            Připojit se na server
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-zinc-800/50 bg-zinc-950/50">
+        <div class="mx-auto max-w-7xl px-6 py-10">
+            <div class="flex flex-col items-center justify-between gap-6 md:flex-row">
+                <div class="flex items-center gap-2">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-600/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-violet-400" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <span class="text-sm font-bold text-white">Nubaria<span
+                            class="text-violet-400">-Chilldark</span></span>
+                </div>
+
+                <div class="flex items-center gap-6">
+                    <a href="index.html" class="text-sm text-zinc-500 hover:text-zinc-300 transition">Domů</a>
+                    <a href="team.html" class="text-sm text-violet-400 transition">Tým</a>
+                    <a href="index.html#pripojeni"
+                        class="text-sm text-zinc-500 hover:text-zinc-300 transition">Připojení</a>
+                </div>
+
+                <p class="text-sm text-zinc-600">© 2025 Nubaria-Chilldark</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>
